@@ -113,3 +113,7 @@ love.keypressed = function(key)
     events(s)
   end
 end
+
+love.filedropped = function(file)
+  instruments:loadFile(nil, file)
+end

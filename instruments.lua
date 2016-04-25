@@ -93,8 +93,8 @@ instruments.save = function(self, name)
   log("Correctly saved: " .. name)
 end
 
-instruments.loadFile = function(self, filename)
-  local f, e = love.filesystem.newFile("saves/" .. filename, "r")
+instruments.loadFile = function(self, filename, file)
+  local f, e = file or love.filesystem.newFile("saves/" .. filename, "r")
   if not f then return f, e end
   local s = f:read()
   f:close()
@@ -131,7 +131,7 @@ instruments.loadFile = function(self, filename)
   end
   board.changed = true --board:render won't work! why!
   board:render()
-  log("Correctly loaded: " .. filename)
+  log("Correctly loaded: " .. (filename or file:getFilename()))
 end
   
 return instruments
