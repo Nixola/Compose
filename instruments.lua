@@ -98,30 +98,39 @@ instruments.loadFile = function(self, filename)
   if not f then return f, e end
   local s = f:read()
   f:close()
+
+  --init instruments; we don't want to mix the old with the new
+  for i, v in ipairs(instruments) do
+  	instruments[v].data = {}
+  end
+
+  board.data = {}
+
   s = love.math.decompress(s, "zlib")
   local s1, bpm
   bpm, s1 = s:match("^(%d+)\n(.-)$")
   board.bpm = bpm or board.bpm
   s = s1 or s
   for piece in s:gmatch("([^%\n]+)") do
-    print(piece)
-    print()
+    --print(piece)
+    --print()
     local i
     i, piece = piece:match("^(%d+):(.-)$")
     i = tonumber(i)
     local value = 1
     for part in piece:gmatch("([^;]+)") do
-      print("|" .. part .. "|")
+      --print("|" .. part .. "|")
       for note in part:gmatch("(%d+)") do
-        print(note)
+        --print(note)
         local ins = instruments[i]
         instruments[ins].data[tonumber(note)] = value
-        print("Loading note " .. note .. " (" .. value .. ") for instrument " .. ins)
+        --print("Loading note " .. note .. " (" .. value .. ") for instrument " .. ins)
       end
       value = value + 1
     end
   end
   board.changed = true --board:render won't work! why!
+  board:render()
   log("Correctly loaded: " .. filename)
 end
   
