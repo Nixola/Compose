@@ -47,4 +47,36 @@ gui.button.mousepressed = function(self, mx, my, b)
 end
 
 
+gui.log = {}
+setmetatable(gui.log, {__call = function(self, x, y, width, height)
+  local t = {}
+  t.x = x
+  t.y = y
+  t.width = width
+  t.height = height
+  t.buffer = {}
+  setmetatable(t, {__index = self, __call = function(s, t) return s:push(t) end})
+  return t
+end})
+
+gui.log.draw = function(self)
+  local y = self.y + self.height
+  local step = love.graphics.getFont():getHeight()
+  for i = 1, #self.buffer do
+    if i * step > self.height then break end
+    local ii = #self.buffer - i + 1
+    local v = self.buffer[ii]
+    love.graphics.print(v, self.x, y - step * i)
+  end
+end
+
+gui.log.push = function(self, text)
+  local w, t = love.graphics.getFont():getWrap(text, self.width)
+  for i, v in ipairs(t) do
+    table.insert(self.buffer, t)
+  end
+end
+
+
+
 return gui

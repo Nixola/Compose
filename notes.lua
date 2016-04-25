@@ -1,7 +1,8 @@
 local notes = {}
 notes.sources = {}
 
-local RATE = 48000
+local RATE = tonumber(config.rate) or 48000
+print(config.rate, RATE)
 
 local args = {...}
 
@@ -71,7 +72,7 @@ functions.organbeat = function(s,v,a)
 	end
 	return functions.organ(s,v,a)
 end
-functions.guitarbeat = function(s, v, a, t)
+functions.guitar = function(s, v, a, t)
 	local N = math.floor(RATE / v)
 	if not t then
 		t = {}
@@ -86,6 +87,8 @@ functions.guitarbeat = function(s, v, a, t)
 	table.remove(t, 1)
 	return t[1], t
 end
+
+local looping = {sine = true, saw = true, sawf = true, square = true, triang = true, strings = true, organ = true}
 
 	
 if not functions[args[1]] then
@@ -107,27 +110,33 @@ for i = 50, noteMax do
 end
 
 notes.soundDatas = {}
-for i = noteMin, noteMax do
-	local v = notes[i]
-	local T = RATE/v
-	local samples = math.floor(RATE/T)*T--*.202
-	local t
-	--local samples = RATE
 
-	--local samples = T*15
-	--print(samples)
-	notes.soundDatas[i] = love.sound.newSoundData( samples, RATE, 16, 1)
-	for s = 0, samples-1 do
-		local sample
-		sample, t = functions[args[1]](s, v, a, t)
-		notes.soundDatas[i]:setSample(s, sample)
+local f = function()
+	for i = noteMin, noteMax do
+		local v = notes[i]
+		local T = RATE/v
+		local samples = math.floor(RATE/T)*T--*.202
+		local t
+		--local samples = RATE
+
+		--local samples = T*15
+		--print(samples)
+		notes.soundDatas[i] = love.sound.newSoundData( samples, RATE, 16, 1)
+		local f = functions[args[1]]
+		for s = 0, samples-1 do
+			local sample
+			sample, t = f(s, v, a, t)
+			notes.soundDatas[i]:setSample(s, sample)
+		end
+		coroutine.yield()
 	end
+
+	notes.sources = {}
+	for i, v in pairs(notes.soundDatas) do
+		notes.sources[i] = love.audio.newSource(v, 'static')
+		if looping[args[1]] then notes.sources[i]:setLooping(true) end
+	end
+	return notes
 end
 
-notes.sources = {}
-for i, v in pairs(notes.soundDatas) do
-	notes.sources[i] = love.audio.newSource(v, 'static')
-	if not args[1]:match("beat") then notes.sources[i]:setLooping(true) end
-end
-
-return notes
+return f
