@@ -4,7 +4,7 @@ require "utils"
 local board, instruments, instrument, gui, sound, state
 
 var "log" "dummy"
-var "events" "dummy"
+var "events" (function() end)
 
 var "config" {}
 
@@ -104,7 +104,7 @@ love.keypressed = function(key)
     instruments:loadFile(saves[#saves])
   end
   state:keypressed(key)
-  if (not (key:match("ctrl") or key:match("shift") or key:match("alt"))) and (type(events) == "function") then
+  if not (key:match("ctrl") or key:match("shift") or key:match("alt")) then
     local s = ""
     s = ctrl and (s .. "C + ") or s
     s = alt and (s .. "A + ") or s
