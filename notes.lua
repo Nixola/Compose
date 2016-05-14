@@ -34,6 +34,11 @@ local BIRATEPI = RATE/pi/2
 local PI2 = pi*2
 
 local functions = {}
+--Function arguments:
+--  s, it's the sample number. Starts from 0.
+--  v, it's the frequency.
+--  a, it's the amplitude. 0-1.
+--  t, it's just the second value you return in the function. I used it in the "Guitar" function, look at that.
 functions.sine = function(s, v, a) return a*sin(s*v/BIRATEPI)  end
 functions.saw = function(s, v, a) local n = 2*(s*v/RATE-math.floor(1/2+s*v/RATE))*a; return n end
 functions.sawf = function(s, v, a)
