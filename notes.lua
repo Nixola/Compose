@@ -48,7 +48,7 @@ functions.sawf = function(s, v, a)
 end
 functions.square=function(s, v, a) local t = RATE/v; return (s % t > t/2) and -1 or 1 end
 functions.triang = function(s, v, a) return abs(functions.saw(s,v,a))*2-1 end
-functions.strings = function(s, v, a) return functions.triang(s, v*notes.diff^.1, a/3)+functions.triang(s, v, a/3)+functions.sawf(s, v*notes.diff^.1, a/6) end
+--functions.strings = function(s, v, a) return functions.triang(s, v*notes.diff^.1, a/3)+functions.triang(s, v, a/3)+functions.sawf(s, v*notes.diff^.1, a/6) end
 functions.organ = function(s, v, a) return functions.sine(s, v/2, a/5)+functions.sine(s, v, a/5)+functions.sine(s, v*2, a/5)+functions.sine(s, v*4, a/5)+functions.sine(s, v*8, a/5) end
 functions.sinebeat = function(s, v, a) 
 	local attack = math.floor(0.002 * RATE);
@@ -84,6 +84,26 @@ functions.guitar = function(s, v, a, t)
 		return t[s+1], t
 	end
 	t[N+1] = (t[1]+t[2])*.49
+	table.remove(t, 1)
+	return t[1], t
+end
+functions.guitar2 = function(s, v, a, t)
+	local N = math.floor(RATE / v)
+	local n = RATE/v - N
+	if not t then
+		t = {}
+		for i = 1, N + 1 do
+			t[i] = love.math.random()-0.5
+		end
+	end
+	if s+1 <= N then
+		return t[s+1], t
+	end
+	local n1 = (t[1]+t[2])*.49
+	t[N+1] = t[N+1] + n1*n
+	t[N+2] = n1*(1-n)
+	--t[N+1] = (t[1]+t[2])*.49
+	--trying out linear interpolation... this will not end well at all
 	table.remove(t, 1)
 	return t[1], t
 end

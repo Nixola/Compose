@@ -7,7 +7,7 @@ local instruments = {
   --organ = notes("organ", 0.8, 1, board.height),
   --guitar = notes("guitarbeat", 0.8, 1, board.height);
 
-  "sine", "square", "organ", "guitar";
+  "sine", "square", "organ", "guitar", "guitar2";
 }
 
 --[[
